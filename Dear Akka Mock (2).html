@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Dear Akka - Health Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 100%);
+            touch-action: pan-y;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 500px;
+                height: 90vh;
+                max-height: 800px;
+                margin: 0 auto;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                margin-top: 5vh;
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+            min-height: 70px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .back-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .back-btn.visible {
+            display: flex;
+        }
+
+        .header-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-avatar {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            background: #f9fafb;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 16px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #1f2937;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-text {
+            font-size: 15px;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .message-time {
+            font-size: 11px;
+            margin-top: 6px;
+            opacity: 0.7;
+        }
+
+        .condition-buttons {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .condition-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            touch-action: manipulation;
+        }
+
+        .condition-btn:active {
+            transform: scale(0.98);
+        }
+
+        .condition-btn.pcos {
+            background: #ccfbf1;
+            color: #115e59;
+        }
+
+        .condition-btn.breast {
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .condition-btn.uti {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .condition-btn.ovarian {
+            background: #e9d5ff;
+            color: #6b21a8;
+        }
+
+        .input-area {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            flex-shrink: 0;
+            min-height: 80px;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+            touch-action: manipulation;
+        }
+
+        .action-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 6px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+            width: fit-content;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #9ca3af;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-logo {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .loading-subtext {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">👩‍⚕️</div>
+        <div class="loading-text">Dear Akka</div>
+        <div class="loading-subtext">Your Health Companion</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" id="backBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+            <div class="header-content">
+                <h1>Dear Akka</h1>
+                <p>Online • Educational purposes only</p>
+            </div>
+            <div class="header-avatar">
+                👩‍⚕️
+            </div>
+        </div>
+
+        <div class="messages-area" id="messagesArea"></div>
+
+        <div class="input-area" id="inputArea"></div>
+    </div>
+
+    <script>
+        // Prevent zoom on double tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        const conditions = {
+            pcos: {
+                name: "PCOS",
+                fullName: "Polycystic Ovary Syndrome",
+                overview: {
+                    definition: "Hormonal disorder affecting 10-20% of Indian women",
+                    impact: "Irregular periods, excess androgens, fertility issues",
+                    statistics: "Major reproductive health concern in India",
+                    benefits: "Early detection can prevent long-term complications"
+                },
+                questions: [
+                    {
+                        id: 1,
+                        text: "Do you experience irregular menstrual cycles (cycle length >35 days or <21 days)?",
+                        yesResponse: "Irregular periods are one of the primary signs of PCOS. This happens because hormonal imbalances prevent regular ovulation.",
+                        noResponse: "Regular menstrual cycles are a good sign. However, PCOS can still be present with other symptoms.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 2,
+                        text: "Do you have excessive facial or body hair growth (hirsutism)?",
+                        yesResponse: "Excess hair growth, especially on face, chest, or back, indicates elevated androgen (male hormone) levels, a key feature of PCOS.",
+                        noResponse: "The absence of hirsutism is positive, though some women with PCOS may not experience visible excess hair growth.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 3,
+                        text: "Do you suffer from persistent acne, especially on face, chest, or upper back?",
+                        yesResponse: "Hormonal acne is common in PCOS due to increased androgen levels, which stimulate oil glands.",
+                        noResponse: "Clear skin is great! However, PCOS can manifest through other symptoms.",
+                        severity: "MILD"
+                    },
+                    {
+                        id: 4,
+                        text: "Have you experienced unexplained weight gain or difficulty losing weight?",
+                        yesResponse: "Weight management challenges in PCOS are linked to insulin resistance, making it harder to lose weight through diet alone.",
+                        noResponse: "Maintaining a healthy weight is beneficial. Some women with PCOS are lean, so weight alone isn't diagnostic.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 5,
+                        text: "Do you notice dark patches of skin (acanthosis nigricans) on neck, armpits, or groin?",
+                        yesResponse: "Dark, velvety skin patches indicate insulin resistance, a serious metabolic concern requiring medical attention.",
+                        noResponse: "Good! This symptom when present indicates significant insulin resistance.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 6,
+                        text: "Are you experiencing hair thinning or hair loss from the scalp?",
+                        yesResponse: "Scalp hair thinning in PCOS is caused by elevated androgens affecting hair follicles, similar to male pattern baldness.",
+                        noResponse: "Healthy hair growth is a positive sign.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 7,
+                        text: "Have you been trying to conceive for over a year without success?",
+                        yesResponse: "PCOS is the leading cause of anovulatory infertility. Irregular or absent ovulation prevents conception.",
+                        noResponse: "If you're not trying to conceive or haven't had difficulties, this is not a concern at present.",
+                        severity: "HIGH"
+                    }
+                ],
+                healthTips: [
+                    "Maintain a balanced diet with low glycemic index foods",
+                    "Exercise regularly (150 minutes per week)",
+                    "Manage stress through yoga or meditation",
+                    "Monitor weight and aim for gradual weight loss if needed",
+                    "Regular gynecological check-ups"
+                ]
+            },
+            breast: {
+                name: "Breast Cancer",
+                fullName: "Breast Cancer",
+                overview: {
+                    statistics: "27% of all cancers in Indian women",
+                    concern: "60% diagnosed at advanced stages (III/IV)",
+                    hope: ">90% survival when detected early",
+                    risk: "1 in 28 urban Indian women"
+                },
+                questions: [
+                    {
+                        id: 1,
+                        text: "Have you noticed a new lump or thickening in your breast or underarm area?",
+                        yesResponse: "A new breast lump is the most common sign of breast cancer and requires immediate medical evaluation. Most lumps are benign, but examination is essential.",
+                        noResponse: "The absence of lumps is reassuring. Continue monthly self-breast examinations to monitor for changes.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 2,
+                        text: "Have you noticed any change in the size, shape, or appearance of your breast?",
+                        yesResponse: "Visible changes in breast shape or size can indicate underlying tumors affecting breast tissue structure. Medical evaluation is necessary.",
+                        noResponse: "Stable breast appearance is good. However, continue monitoring for any future changes.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 3,
+                        text: "Do you have any nipple discharge (especially bloody or clear discharge from one breast)?",
+                        yesResponse: "Spontaneous nipple discharge, particularly if bloody or from one breast, can be a warning sign and needs urgent investigation.",
+                        noResponse: "No discharge is a positive sign. Milky discharge from both breasts can be normal in certain situations.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 4,
+                        text: "Have you noticed your nipple turning inward (inverted) or any changes to the nipple?",
+                        yesResponse: "New nipple inversion or changes can indicate breast tissue being pulled inward by a tumor. This requires prompt medical attention.",
+                        noResponse: "Normal nipple appearance is reassuring. Some women naturally have inverted nipples, which is usually not concerning.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 5,
+                        text: "Do you see dimpling, puckering, or orange-peel texture on your breast skin?",
+                        yesResponse: "Skin changes like dimpling or orange-peel texture (peau d'orange) suggest advanced breast cancer affecting lymphatic drainage. Seek immediate care.",
+                        noResponse: "Smooth, normal skin texture is a good sign.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 6,
+                        text: "Is there any redness, warmth, or swelling in your breast?",
+                        yesResponse: "These symptoms may indicate inflammatory breast cancer, a rare but aggressive form, or an infection. Both require urgent medical evaluation.",
+                        noResponse: "No inflammation is positive, but continue to monitor your breasts regularly.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 7,
+                        text: "Do you experience persistent breast pain or discomfort in one specific area?",
+                        yesResponse: "While breast pain is rarely a sign of cancer (more often hormonal), persistent localized pain should be evaluated, especially with other symptoms.",
+                        noResponse: "The absence of pain is normal. Most breast cancers are painless in early stages.",
+                        severity: "MODERATE"
+                    }
+                ],
+                healthTips: [
+                    "Perform monthly self-breast examinations",
+                    "Annual clinical breast examinations",
+                    "Mammography after age 40",
+                    "Maintain healthy weight and exercise regularly",
+                    "Limit alcohol consumption"
+                ]
+            },
+            uti: {
+                name: "UTI",
+                fullName: "Urinary Tract Infection",
+                overview: {
+                    prevalence: ">50% of women experience at least one UTI",
+                    statistics: "3-20% prevalence in Indian women",
+                    recurrence: "20-30% have repeat infections",
+                    risks: "Poor hydration, hygiene, diabetes, sexual activity",
+                    complications: "Kidney damage if untreated"
+                },
+                questions: [
+                    {
+                        id: 1,
+                        text: "Do you experience a burning sensation or pain while urinating?",
+                        yesResponse: "Burning during urination (dysuria) is the hallmark symptom of UTI, caused by inflammation of the urinary tract lining from bacterial infection.",
+                        noResponse: "No burning is a good sign. This is the most common symptom of UTI.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 2,
+                        text: "Are you urinating more frequently than usual, even with small amounts?",
+                        yesResponse: "Increased urinary frequency with small volumes indicates bladder irritation from infection, causing frequent urge sensations.",
+                        noResponse: "Normal urination patterns are reassuring.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 3,
+                        text: "Do you feel a sudden, strong urge to urinate that's difficult to control?",
+                        yesResponse: "Urgent need to urinate results from bladder muscle irritation by bacteria, triggering spasmodic contractions.",
+                        noResponse: "No urgency issues is positive. This symptom when present significantly impacts daily activities.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 4,
+                        text: "Do you have pain or pressure in your lower abdomen or pelvic area?",
+                        yesResponse: "Lower abdominal pain indicates bladder inflammation (cystitis) from infection. This discomfort worsens with a full bladder.",
+                        noResponse: "No abdominal pain is good. This symptom can range from mild discomfort to severe pain.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 5,
+                        text: "Is your urine cloudy, dark, or has a strong/foul odor?",
+                        yesResponse: "Cloudy, malodorous urine contains bacteria, white blood cells, and sometimes pus, indicating active infection.",
+                        noResponse: "Clear, odorless urine is a healthy sign.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 6,
+                        text: "Have you noticed blood in your urine (pink, red, or cola-colored)?",
+                        yesResponse: "Blood in urine (hematuria) suggests significant bladder or urethral inflammation and requires medical attention to rule out complications.",
+                        noResponse: "No blood in urine is reassuring. This symptom when present needs evaluation.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 7,
+                        text: "Do you have fever, chills, or pain in your back/side (flank area)?",
+                        yesResponse: "⚠️ ALERT: Fever with back pain indicates kidney infection (pyelonephritis), a serious condition requiring immediate medical care to prevent permanent kidney damage.",
+                        noResponse: "Excellent! The absence of these symptoms suggests the infection hasn't spread to kidneys.",
+                        severity: "CRITICAL"
+                    }
+                ],
+                healthTips: [
+                    "Drink 2.5-3 liters of water daily",
+                    "Urinate after sexual intercourse",
+                    "Wipe front to back after using toilet",
+                    "Avoid holding urine for long periods",
+                    "Wear cotton underwear and avoid tight clothing"
+                ]
+            },
+            ovarian: {
+                name: "Ovarian Cancer",
+                fullName: "Ovarian Cancer",
+                overview: {
+                    ranking: "3rd among gynecological cancers in India",
+                    statistics: "4,818 new cases annually",
+                    concern: "70-80% diagnosed at advanced stages (III/IV)",
+                    hope: ">90% survival with early detection",
+                    age: "Median age <50 years in India"
+                },
+                questions: [
+                    {
+                        id: 1,
+                        text: "Have you experienced persistent abdominal bloating or feeling of fullness for more than 2 weeks?",
+                        yesResponse: "Persistent bloating can indicate fluid accumulation (ascites) or tumor growth in the abdomen. When constant and accompanied by other symptoms, it warrants evaluation.",
+                        noResponse: "Occasional bloating is normal. Persistent bloating lasting weeks is more concerning.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 2,
+                        text: "Do you have persistent pelvic or abdominal pain or discomfort?",
+                        yesResponse: "Ongoing pelvic pain may indicate ovarian tumor pressing on surrounding organs or tissue. This symptom is often overlooked as common discomfort.",
+                        noResponse: "No persistent pain is reassuring. Brief menstrual pain is different from constant discomfort.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 3,
+                        text: "Do you feel full quickly when eating or have difficulty eating normal amounts?",
+                        yesResponse: "Early satiety occurs when abdominal tumors or fluid press on the stomach, reducing its capacity. This symptom combined with others needs attention.",
+                        noResponse: "Normal appetite and eating capacity is a good sign.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 4,
+                        text: "Have you noticed increased urinary frequency or urgency (different from UTI)?",
+                        yesResponse: "Urinary changes without infection can occur when an ovarian mass presses on the bladder, reducing its capacity.",
+                        noResponse: "Normal urinary patterns are positive.",
+                        severity: "MILD"
+                    },
+                    {
+                        id: 5,
+                        text: "Have you experienced unexplained weight loss or loss of appetite?",
+                        yesResponse: "Unintentional weight loss is concerning and may indicate advanced disease affecting metabolism and causing cancer cachexia. Medical evaluation is essential.",
+                        noResponse: "Stable weight is reassuring. Unexplained weight loss is always a red flag.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 6,
+                        text: "Have you noticed your abdomen becoming increasingly swollen or distended?",
+                        yesResponse: "Progressive abdominal swelling can indicate tumor growth or ascites (fluid accumulation). This symptom requires immediate medical assessment.",
+                        noResponse: "No abdominal swelling is good. This is often the symptom that brings women to medical attention.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 7,
+                        text: "Are you experiencing unusual, persistent fatigue not relieved by rest?",
+                        yesResponse: "Chronic fatigue in ovarian cancer results from the body fighting disease and potential anemia. Combined with other symptoms, it's significant.",
+                        noResponse: "Normal energy levels are positive, though fatigue alone is non-specific.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 8,
+                        text: "Have you noticed changes in bowel habits (constipation or diarrhea)?",
+                        yesResponse: "Bowel changes occur when ovarian tumors press on the intestines or spread to affect bowel function.",
+                        noResponse: "Normal bowel function is reassuring.",
+                        severity: "MODERATE"
+                    }
+                ],
+                healthTips: [
+                    "Know your family history of ovarian/breast cancer",
+                    "Annual pelvic examinations",
+                    "Be aware of persistent symptoms lasting >2 weeks",
+                    "Consider genetic testing if high family risk",
+                    "Maintain healthy weight and active lifestyle"
+                ]
+            }
+        };
+
+        let stage = 'welcome';
+        let selectedCondition = null;
+        let currentQuestion = 0;
+        let responses = [];
+
+        const messagesArea = document.getElementById('messagesArea');
+        const inputArea = document.getElementById('inputArea');
+        const backBtn = document.getElementById('backBtn');
+        const loadingScreen = document.getElementById('loadingScreen');
+
+        // Hide loading screen after page loads
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                loadingScreen.classList.add('hidden');
+                setTimeout(function() {
+                    initWelcome();
+                }, 500);
+            }, 1500);
+        });
+
+        function scrollToBottom() {
+            setTimeout(() => {
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+            }, 100);
+        }
+
+        function getTime() {
+            return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function addBotMessage(text, showOptions = false, delay = 800) {
+            return new Promise((resolve) => {
+                showTypingIndicator();
+                
+                setTimeout(() => {
+                    hideTypingIndicator();
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message bot';
+                    messageDiv.innerHTML = `
+                        <div class="message-content">
+                            <div class="message-text">${text}</div>
+                            <div class="message-time">${getTime()}</div>
+                            ${showOptions ? getConditionButtons() : ''}
+                        </div>
+                    `;
+                    messagesArea.appendChild(messageDiv);
+                    scrollToBottom();
+                    resolve();
+                }, delay);
+            });
+        }
+
+        function addUserMessage(text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user';
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-text">${text}</div>
+                    <div class="message-time">${getTime()}</div>
+                </div>
+            `;
+            messagesArea.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            messagesArea.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        function getConditionButtons() {
+            return `
+                <div class="condition-buttons">
+                    <button class="condition-btn pcos" onclick="handleConditionSelect('pcos')">
+                        🔄 PCOS
+                    </button>
+                    <button class="condition-btn breast" onclick="handleConditionSelect('breast')">
+                        🎗️ Breast Cancer
+                    </button>
+                    <button class="condition-btn uti" onclick="handleConditionSelect('uti')">
+                        💧 UTI
+                    </button>
+                    <button class="condition-btn ovarian" onclick="handleConditionSelect('ovarian')">
+                        🌸 Ovarian Cancer
+                    </button>
+                </div>
+            `;
+        }
+
+        async function initWelcome() {
+            await addBotMessage("Hello! 👋 Welcome to Dear Akka - Your Health Companion.");
+            await addBotMessage("I'm here to help you assess symptoms for common women's health conditions. This is for educational purposes only and not a substitute for professional medical advice.", false, 1500);
+            await addBotMessage("Please select a condition you'd like to learn about:", true, 1500);
+        }
+
+        async function handleConditionSelect(conditionKey) {
+            const condition = conditions[conditionKey];
+            selectedCondition = conditionKey;
+            addUserMessage(condition.name);
+            
+            await addBotMessage(`Great choice! Let me tell you about ${condition.fullName}.`, false, 500);
+            
+            const overviewText = Object.values(condition.overview).join('\n\n');
+            await addBotMessage(overviewText, false, 1500);
+            
+            stage = 'overview';
+            await addBotMessage("Ready to start the symptom assessment?", false, 2000);
+            updateInputArea();
+        }
+
+        async function startAssessment() {
+            stage = 'assessment';
+            currentQuestion = 0;
+            responses = [];
+            addUserMessage("Yes, let's start!");
+            
+            await addBotMessage(`Question 1 of ${conditions[selectedCondition].questions.length}`, false, 500);
+            await addBotMessage(conditions[selectedCondition].questions[0].text, false, 800);
+            updateInputArea();
+        }
+
+        async function handleAnswer(answer) {
+            const condition = conditions[selectedCondition];
+            const question = condition.questions[currentQuestion];
+            
+            addUserMessage(answer);
+            
+            const response = answer === 'Yes' ? question.yesResponse : question.noResponse;
+            const newResponses = [...responses, { 
+                question: question.text, 
+                answer, 
+                severity: question.severity 
+            }];
+            responses = newResponses;
+
+            await addBotMessage(response, false, 800);
+            
+            if (currentQuestion < condition.questions.length - 1) {
+                currentQuestion++;
+                await addBotMessage(`Question ${currentQuestion + 1} of ${condition.questions.length}`, false, 2000);
+                await addBotMessage(condition.questions[currentQuestion].text, false, 800);
+            } else {
+                await showResults(newResponses);
+            }
+            updateInputArea();
+        }
+
+        async function showResults(finalResponses) {
+            stage = 'results';
+            const yesCount = finalResponses.filter(r => r.answer === 'Yes').length;
+            const highSeverity = finalResponses.filter(r => r.answer === 'Yes' && (r.severity === 'HIGH' || r.severity === 'CRITICAL')).length;
+            const critical = finalResponses.find(r => r.answer === 'Yes' && r.severity === 'CRITICAL');
+
+            await addBotMessage("Assessment complete! Let me analyze your responses...", false, 2000);
+            
+            let recommendation = getRecommendation(yesCount, highSeverity, critical);
+            
+            await addBotMessage(`${recommendation.level}\n\n${recommendation.message}\n\n${recommendation.action}\n\nTimeline: ${recommendation.timeline}`, false, 1500);
+            
+            const healthTips = conditions[selectedCondition].healthTips.map((tip, i) => `${i + 1}. ${tip}`).join('\n');
+            await addBotMessage(`Here are some health tips for ${conditions[selectedCondition].name}:\n\n${healthTips}`, false, 2000);
+            
+            await addBotMessage("⚠️ Remember: This assessment is for educational purposes only and does not replace professional medical advice. Always consult healthcare professionals for proper diagnosis and treatment.", false, 2000);
+            await addBotMessage("Would you like to learn about another condition or retake this assessment?", false, 2000);
+            
+            updateInputArea();
+        }
+
+        function getRecommendation(yesCount, highSeverity, critical) {
+            if (selectedCondition === 'pcos') {
+                if (yesCount >= 3 || highSeverity >= 2) {
+                    return {
+                        level: "⚠️ Consultation Recommended",
+                        message: "Medical Evaluation Advised",
+                        action: "Consult gynecologist/endocrinologist for hormonal evaluation and ultrasound",
+                        timeline: "Within 2-4 weeks"
+                    };
+                } else if (yesCount >= 2) {
+                    return {
+                        level: "📋 Lifestyle Focus",
+                        message: "Lifestyle Modifications Recommended",
+                        action: "Focus on weight management, regular exercise (150 min/week), balanced diet. Consider consultation if symptoms worsen",
+                        timeline: "Start immediately, review in 3 months"
+                    };
+                } else {
+                    return {
+                        level: "✅ Low Risk",
+                        message: "Continue Regular Health Monitoring",
+                        action: "Minimal symptoms. Continue regular check-ups, self-monitoring, preventive measures",
+                        timeline: "Annual check-ups recommended"
+                    };
+                }
+            } else if (selectedCondition === 'breast') {
+                if (yesCount >= 2 || highSeverity >= 1) {
+                    return {
+                        level: "⚠️ High Priority",
+                        message: "Schedule Physician Consultation Soon",
+                        action: "Your symptoms require medical evaluation. Consult doctor for clinical breast examination and possible mammography/ultrasound",
+                        timeline: "Within 1-2 weeks"
+                    };
+                } else if (yesCount === 1) {
+                    return {
+                        level: "👁️ Monitor",
+                        message: "Monitor Symptoms Closely",
+                        action: "Perform monthly self-breast examinations. If symptoms persist or worsen, consult physician within a month",
+                        timeline: "Monitor for 2-4 weeks"
+                    };
+                } else {
+                    return {
+                        level: "✅ Low Risk",
+                        message: "Continue Regular Health Monitoring",
+                        action: "Minimal symptoms. Continue self-exams, annual clinical exams, maintain healthy lifestyle",
+                        timeline: "Annual check-ups recommended"
+                    };
+                }
+            } else if (selectedCondition === 'uti') {
+                if (critical) {
+                    return {
+                        level: "🚨 URGENT",
+                        message: "IMMEDIATE MEDICAL ATTENTION REQUIRED",
+                        action: "Seek emergency medical care TODAY. Visit nearest hospital or consult physician immediately. This indicates possible kidney infection",
+                        timeline: "Within 24 hours"
+                    };
+                } else if (yesCount >= 3 || highSeverity >= 1) {
+                    return {
+                        level: "🏥 Medical Attention Needed",
+                        message: "Consult Doctor for Treatment",
+                        action: "Your symptoms indicate likely UTI requiring antibiotics. See doctor for urine culture and appropriate treatment",
+                        timeline: "Within 2-3 days"
+                    };
+                } else if (yesCount >= 1) {
+                    return {
+                        level: "💧 Preventive Measures",
+                        message: "Focus on Prevention",
+                        action: "Mild symptoms present. Increase water intake (2.5-3L daily), practice good hygiene, urinate after intercourse. If symptoms worsen, consult doctor",
+                        timeline: "Monitor for 1-2 days"
+                    };
+                } else {
+                    return {
+                        level: "✅ Low Risk",
+                        message: "Continue Regular Health Monitoring",
+                        action: "No symptoms. Continue preventive measures and maintain adequate hydration",
+                        timeline: "Regular health awareness"
+                    };
+                }
+            } else if (selectedCondition === 'ovarian') {
+                if (yesCount >= 4 || highSeverity >= 2) {
+                    return {
+                        level: "🏥 High Priority Evaluation",
+                        message: "Gynecological Evaluation Required",
+                        action: "Multiple concerning symptoms present. Consult gynecologist for pelvic examination, ultrasound, and possible CA-125 blood test",
+                        timeline: "Within 1-2 weeks"
+                    };
+                } else if (yesCount >= 2) {
+                    return {
+                        level: "📋 Medical Consultation",
+                        message: "Consider Medical Evaluation",
+                        action: "Some symptoms warrant attention. Schedule routine gynecological check-up to discuss these concerns",
+                        timeline: "Within 3-4 weeks"
+                    };
+                } else {
+                    return {
+                        level: "✅ Low Risk",
+                        message: "Continue Regular Health Monitoring",
+                        action: "Minimal symptoms. Continue regular check-ups, know your family history, maintain awareness",
+                        timeline: "Annual gynecological check-ups recommended"
+                    };
+                }
+            }
+        }
+
+        function updateInputArea() {
+            backBtn.classList.add('visible');
+            
+            if (stage === 'overview') {
+                inputArea.innerHTML = `
+                    <button class="action-btn btn-primary" onclick="startAssessment()">
+                        Start Assessment
+                    </button>
+                `;
+            } else if (stage === 'assessment') {
+                inputArea.innerHTML = `
+                    <button class="action-btn btn-success" onclick="handleAnswer('Yes')">
+                        ✓ Yes
+                    </button>
+                    <button class="action-btn btn-danger" onclick="handleAnswer('No')">
+                        ✗ No
+                    </button>
+                `;
+            } else if (stage === 'results') {
+                inputArea.innerHTML = `
+                    <button class="action-btn btn-primary" onclick="resetToHome()">
+                        Learn About Other Conditions
+                    </button>
+                    <button class="action-btn btn-secondary" onclick="retakeAssessment()">
+                        Retake This Assessment
+                    </button>
+                `;
+            } else {
+                inputArea.innerHTML = '';
+            }
+        }
+
+        async function resetToHome() {
+            stage = 'welcome';
+            selectedCondition = null;
+            currentQuestion = 0;
+            responses = [];
+            messagesArea.innerHTML = '';
+            inputArea.innerHTML = '';
+            backBtn.classList.remove('visible');
+            
+            await addBotMessage("Welcome back! 👋", false, 500);
+            await addBotMessage("Please select a condition you'd like to learn about:", true, 1000);
+        }
+
+        async function retakeAssessment() {
+            stage = 'overview';
+            currentQuestion = 0;
+            responses = [];
+            addUserMessage("Retake assessment");
+            await addBotMessage("Let's retake the assessment. Ready to start?", false, 500);
+            updateInputArea();
+        }
+
+        backBtn.addEventListener('click', resetToHome);
+    </script>
+</body>
+</html>
