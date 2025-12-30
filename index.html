@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Dear Akka - Health Chatbot</title>
+    <title>Dear Akka - Sundaram Medical Foundation</title>
     <style>
         * {
             margin: 0;
@@ -226,6 +226,21 @@
             color: #6b21a8;
         }
 
+        .condition-btn.menopause {
+            background: #fef3c7;
+            color: #78350f;
+        }
+
+        .condition-btn.thyroid {
+            background: #ddd6fe;
+            color: #5b21b6;
+        }
+
+        .condition-btn.other {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
         .input-area {
             padding: 16px;
             background: white;
@@ -324,7 +339,6 @@
             border-radius: 4px;
         }
 
-        /* Loading screen */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -377,7 +391,7 @@
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">👩‍⚕️</div>
         <div class="loading-text">Dear Akka</div>
-        <div class="loading-subtext">Your Health Companion</div>
+        <div class="loading-subtext">Sundaram Medical Foundation</div>
     </div>
 
     <div class="container">
@@ -402,7 +416,6 @@
     </div>
 
     <script>
-        // Prevent zoom on double tap
         let lastTouchEnd = 0;
         document.addEventListener('touchend', function (event) {
             const now = (new Date()).getTime();
@@ -693,10 +706,185 @@
                     "Consider genetic testing if high family risk",
                     "Maintain healthy weight and active lifestyle"
                 ]
+            },
+            menopause: {
+                name: "Menopause Symptoms",
+                fullName: "Menopause & Perimenopause",
+                overview: {
+                    age: "Average age 45-46 years in India (earlier than global average)",
+                    statistics: "43 million women in menopausal age group",
+                    phases: "Perimenopause can begin 4-8 years before menopause",
+                    impact: "Affects quality of life, bone health, cardiovascular health"
+                },
+                questions: [
+                    {
+                        id: 1,
+                        text: "Are you experiencing hot flashes or sudden feelings of intense heat?",
+                        yesResponse: "Hot flashes are one of the most common menopausal symptoms, affecting 46-56% of Indian women. They result from hormonal fluctuations affecting body temperature regulation.",
+                        noResponse: "Not everyone experiences hot flashes. Other symptoms may still be present.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 2,
+                        text: "Do you have night sweats that disrupt your sleep?",
+                        yesResponse: "Night sweats are vasomotor symptoms that significantly impact sleep quality and daily functioning. They affect 45-52% of menopausal women in India.",
+                        noResponse: "Good sleep quality is important. Other symptoms may still indicate menopausal transition.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 3,
+                        text: "Have you noticed irregular periods or changes in menstrual flow over the past year?",
+                        yesResponse: "Irregular periods are often the first sign of perimenopause as hormone levels fluctuate. This is normal during the transition.",
+                        noResponse: "Regular cycles may continue for some time. Other symptoms can still indicate perimenopause.",
+                        severity: "MILD"
+                    },
+                    {
+                        id: 4,
+                        text: "Are you experiencing persistent fatigue or feeling worn out despite adequate rest?",
+                        yesResponse: "Fatigue affects 62-85% of menopausal women in India. Hormonal changes impact energy metabolism and can cause persistent tiredness.",
+                        noResponse: "Good energy levels are positive. Continue monitoring for changes.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 5,
+                        text: "Do you have muscle or joint pain, especially in the morning?",
+                        yesResponse: "Musculoskeletal pain affects 59-80% of Indian menopausal women. Declining estrogen affects joints, bones, and muscles, causing stiffness and pain.",
+                        noResponse: "No joint pain is great. However, monitor for development of this common symptom.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 6,
+                        text: "Have you noticed mood changes like irritability, anxiety, or feeling depressed?",
+                        yesResponse: "Mood changes are common due to hormonal fluctuations. About 32% of women experience depression or sadness during menopause.",
+                        noResponse: "Stable mood is positive. Continue monitoring for emotional changes.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 7,
+                        text: "Are you experiencing vaginal dryness or discomfort during intercourse?",
+                        yesResponse: "Vaginal dryness affects 42-75% of menopausal women due to declining estrogen. This is treatable and discussing with a doctor can improve quality of life.",
+                        noResponse: "Good vaginal health is important for overall wellbeing.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 8,
+                        text: "Have you noticed memory problems or difficulty concentrating?",
+                        yesResponse: "Cognitive changes affect many women during menopause. These are usually temporary and related to hormonal fluctuations and sleep disruption.",
+                        noResponse: "Clear thinking is positive. Some women do experience brain fog during this transition.",
+                        severity: "MILD"
+                    },
+                    {
+                        id: 9,
+                        text: "Are you experiencing decreased bone density or have had fractures recently?",
+                        yesResponse: "Bone health is a serious concern. Estrogen decline increases osteoporosis risk. This requires medical evaluation and possible bone density testing.",
+                        noResponse: "Good bone health is crucial. Consider calcium, vitamin D supplementation and weight-bearing exercise.",
+                        severity: "HIGH"
+                    }
+                ],
+                healthTips: [
+                    "Maintain calcium (1200mg) and vitamin D (600-800 IU) intake daily",
+                    "Regular weight-bearing exercises for bone health",
+                    "Stay hydrated and maintain healthy diet",
+                    "Practice stress management techniques",
+                    "Regular health screenings including bone density tests",
+                    "Consider hormone replacement therapy consultation if symptoms are severe"
+                ]
+            },
+            thyroid: {
+                name: "Thyroid & Anemia",
+                fullName: "Thyroid Disorders & Iron Deficiency Anemia",
+                overview: {
+                    statistics: "42 million Indians have thyroid disorders; Women 5x more affected",
+                    anemia: "53% of Indian women have anemia",
+                    impact: "Both conditions significantly affect energy, mood, and overall health",
+                    overlap: "Often co-exist and share similar symptoms"
+                },
+                questions: [
+                    {
+                        id: 1,
+                        text: "Do you experience persistent fatigue or weakness despite adequate rest?",
+                        yesResponse: "Chronic fatigue is a hallmark symptom of both hypothyroidism and anemia. This indicates your body may not be getting sufficient oxygen or your metabolism may be slowed.",
+                        noResponse: "Good energy levels are positive. Continue monitoring for changes.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 2,
+                        text: "Have you noticed unexplained weight gain or difficulty losing weight?",
+                        yesResponse: "Unexplained weight gain is a classic sign of hypothyroidism, where slowed metabolism makes weight management difficult despite diet and exercise.",
+                        noResponse: "Stable weight is good. However, metabolic issues can present with other symptoms.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 3,
+                        text: "Do you feel cold intolerance or notice your hands and feet are always cold?",
+                        yesResponse: "Cold intolerance is a key symptom of hypothyroidism. Your body's decreased metabolic rate reduces heat generation. In anemia, poor circulation causes cold extremities.",
+                        noResponse: "Normal temperature regulation is positive.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 4,
+                        text: "Are you experiencing hair loss, dry skin, or brittle nails?",
+                        yesResponse: "These symptoms indicate both thyroid dysfunction and iron deficiency. Thyroid hormones and iron are essential for healthy hair, skin, and nails.",
+                        noResponse: "Healthy hair and skin are good signs.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 5,
+                        text: "Do you have difficulty concentrating, memory problems, or brain fog?",
+                        yesResponse: "Cognitive issues occur in both conditions. Thyroid hormones regulate brain function, while anemia reduces oxygen delivery to the brain.",
+                        noResponse: "Clear mental function is positive.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 6,
+                        text: "Have you noticed a swelling or enlargement in your neck (goiter)?",
+                        yesResponse: "Visible neck swelling indicates thyroid gland enlargement (goiter), which requires immediate medical evaluation and thyroid function testing.",
+                        noResponse: "No visible swelling is reassuring. However, thyroid dysfunction can exist without goiter.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 7,
+                        text: "Are you experiencing irregular or heavy menstrual periods?",
+                        yesResponse: "Both thyroid disorders and anemia significantly affect menstrual cycles. Heavy periods can worsen anemia, while thyroid issues disrupt hormonal balance.",
+                        noResponse: "Regular periods are positive, though other symptoms may still indicate these conditions.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 8,
+                        text: "Do you experience rapid heartbeat, palpitations, or shortness of breath with minimal exertion?",
+                        yesResponse: "These symptoms can indicate hyperthyroidism (overactive thyroid) or severe anemia. Both conditions strain your cardiovascular system and require medical attention.",
+                        noResponse: "Normal heart rhythm and breathing are positive.",
+                        severity: "HIGH"
+                    },
+                    {
+                        id: 9,
+                        text: "Have you noticed pale skin, pale conjunctiva (inside of eyelids), or pale nail beds?",
+                        yesResponse: "Pallor is a direct sign of anemia, indicating insufficient hemoglobin and red blood cells. This requires blood tests to confirm and identify the cause.",
+                        noResponse: "Normal skin color is reassuring.",
+                        severity: "MODERATE"
+                    },
+                    {
+                        id: 10,
+                        text: "Do you experience constipation or digestive issues?",
+                        yesResponse: "Constipation is common in hypothyroidism due to slowed digestive system. This symptom, combined with others, warrants thyroid testing.",
+                        noResponse: "Normal digestive function is positive.",
+                        severity: "MILD"
+                    }
+                ],
+                healthTips: [
+                    "Get thyroid function tests (TSH, T3, T4) and complete blood count (CBC) done",
+                    "Ensure adequate iodine intake through iodized salt",
+                    "Consume iron-rich foods: green leafy vegetables, meat, legumes",
+                    "Take vitamin C with iron-rich foods to enhance absorption",
+                    "Avoid tea/coffee with meals as they inhibit iron absorption",
+                    "Regular follow-up with healthcare provider for medication adjustment"
+                ]
             }
         };
 
-        let stage = 'welcome';
+        let stage = 'location';
+        let selectedState = null;
+        let selectedCity = null;
         let selectedCondition = null;
         let currentQuestion = 0;
         let responses = [];
@@ -706,7 +894,6 @@
         const backBtn = document.getElementById('backBtn');
         const loadingScreen = document.getElementById('loadingScreen');
 
-        // Hide loading screen after page loads
         window.addEventListener('load', function() {
             setTimeout(function() {
                 loadingScreen.classList.add('hidden');
@@ -738,7 +925,7 @@
                         <div class="message-content">
                             <div class="message-text">${text}</div>
                             <div class="message-time">${getTime()}</div>
-                            ${showOptions ? getConditionButtons() : ''}
+                            ${showOptions ? (stage === 'location' ? getLocationButtons() : (stage === 'city' ? getCityButtons() : getConditionButtons())) : ''}
                         </div>
                     `;
                     messagesArea.appendChild(messageDiv);
@@ -783,6 +970,44 @@
             }
         }
 
+        function getLocationButtons() {
+            return `
+                <div class="condition-buttons">
+                    <button class="condition-btn pcos" onclick="handleLocationSelect('Tamil Nadu')">
+                        📍 Tamil Nadu
+                    </button>
+                    <button class="condition-btn breast" onclick="handleLocationSelect('Karnataka')">
+                        📍 Karnataka
+                    </button>
+                    <button class="condition-btn uti" onclick="handleLocationSelect('Andhra Pradesh')">
+                        📍 Andhra Pradesh
+                    </button>
+                    <button class="condition-btn ovarian" onclick="handleLocationSelect('Telangana')">
+                        📍 Telangana
+                    </button>
+                    <button class="condition-btn menopause" onclick="handleLocationSelect('Kerala')">
+                        📍 Kerala
+                    </button>
+                    <button class="condition-btn thyroid" onclick="handleLocationSelect('Rest of India')">
+                        📍 Rest of India
+                    </button>
+                </div>
+            `;
+        }
+
+        function getCityButtons() {
+            return `
+                <div class="condition-buttons">
+                    <button class="condition-btn pcos" onclick="handleCitySelect('Chennai')">
+                        🏥 Chennai
+                    </button>
+                    <button class="condition-btn breast" onclick="handleCitySelect('Others')">
+                        🏥 Other Cities in Tamil Nadu
+                    </button>
+                </div>
+            `;
+        }
+
         function getConditionButtons() {
             return `
                 <div class="condition-buttons">
@@ -798,14 +1023,44 @@
                     <button class="condition-btn ovarian" onclick="handleConditionSelect('ovarian')">
                         🌸 Ovarian Cancer
                     </button>
+                    <button class="condition-btn menopause" onclick="handleConditionSelect('menopause')">
+                        🌺 Menopause Symptoms
+                    </button>
+                    <button class="condition-btn thyroid" onclick="handleConditionSelect('thyroid')">
+                        🦋 Thyroid & Anemia
+                    </button>
+                    <button class="condition-btn other" onclick="handleOtherIssue()">
+                        ❓ Other Health Concern
+                    </button>
                 </div>
             `;
         }
 
         async function initWelcome() {
-            await addBotMessage("Hello! 👋 Welcome to Dear Akka - Your Health Companion.");
+            await addBotMessage("Vanakkam! 🙏 Welcome to Dear Akka by Sundaram Medical Foundation.");
             await addBotMessage("I'm here to help you assess symptoms for common women's health conditions. This is for educational purposes only and not a substitute for professional medical advice.", false, 1500);
-            await addBotMessage("Please select a condition you'd like to learn about:", true, 1500);
+            await addBotMessage("Learn more about us at: https://smf.in/", false, 1000);
+            await addBotMessage("First, please tell me where you're from:", true, 1500);
+        }
+
+        async function handleLocationSelect(state) {
+            selectedState = state;
+            addUserMessage(state);
+            
+            if (state === 'Tamil Nadu') {
+                stage = 'city';
+                await addBotMessage("Great! Are you from Chennai or other cities in Tamil Nadu?", true, 800);
+            } else {
+                stage = 'condition';
+                await addBotMessage(`Thank you! Now, please select the health condition you'd like to learn about:`, true, 800);
+            }
+        }
+
+        async function handleCitySelect(city) {
+            selectedCity = city;
+            addUserMessage(city);
+            stage = 'condition';
+            await addBotMessage(`Perfect! Now, please select the health condition you'd like to learn about:`, true, 800);
         }
 
         async function handleConditionSelect(conditionKey) {
@@ -820,6 +1075,22 @@
             
             stage = 'overview';
             await addBotMessage("Ready to start the symptom assessment?", false, 2000);
+            updateInputArea();
+        }
+
+        async function handleOtherIssue() {
+            addUserMessage("Other Health Concern");
+            stage = 'other';
+            
+            await addBotMessage("I understand you have a specific health concern that's not listed in our assessment options.", false, 800);
+            
+            if (selectedState === 'Tamil Nadu' && selectedCity === 'Chennai') {
+                await addBotMessage("For personalized consultation regarding your specific health concern:\n\n📞 Sundaram Medical Foundation, Chennai\n\n🏥 Book In-Person Appointment:\nCall: +91 89391 38080\n\n💻 Book Online Consultation:\nCall: +91 89399 78068\n\n🌐 Visit: https://smf.in/", false, 1500);
+            } else {
+                await addBotMessage("For personalized consultation regarding your specific health concern:\n\n📞 Online Consultation with SMF:\nCall: +91 89399 78068\n\n🌐 Visit: https://smf.in/\n\nOr visit your nearest hospital for in-person evaluation.", false, 1500);
+            }
+            
+            await addBotMessage("Would you like to learn about any of our other assessment topics or need more information?", false, 2000);
             updateInputArea();
         }
 
@@ -872,13 +1143,25 @@
             
             await addBotMessage(`${recommendation.level}\n\n${recommendation.message}\n\n${recommendation.action}\n\nTimeline: ${recommendation.timeline}`, false, 1500);
             
+            if (recommendation.needsConsultation) {
+                await addContactInfo();
+            }
+            
             const healthTips = conditions[selectedCondition].healthTips.map((tip, i) => `${i + 1}. ${tip}`).join('\n');
             await addBotMessage(`Here are some health tips for ${conditions[selectedCondition].name}:\n\n${healthTips}`, false, 2000);
             
-            await addBotMessage("⚠️ Remember: This assessment is for educational purposes only and does not replace professional medical advice. Always consult healthcare professionals for proper diagnosis and treatment.", false, 2000);
+            await addBotMessage("⚠️ Remember: This assessment is for educational purposes only and does not replace professional medical advice. Always consult healthcare professionals for proper diagnosis and treatment.\n\n🌐 Learn more: https://smf.in/", false, 2000);
             await addBotMessage("Would you like to learn about another condition or retake this assessment?", false, 2000);
             
             updateInputArea();
+        }
+
+        async function addContactInfo() {
+            if (selectedState === 'Tamil Nadu' && selectedCity === 'Chennai') {
+                await addBotMessage("📞 Sundaram Medical Foundation, Chennai\n\n🏥 Book In-Person Appointment:\nCall: +91 89391 38080\n\n💻 Book Online Consultation:\nCall: +91 89399 78068\n\n🌐 Visit: https://smf.in/", false, 1500);
+            } else {
+                await addBotMessage("📞 For Online Consultation with SMF:\n\nCall: +91 89399 78068\n\n🌐 Visit: https://smf.in/\n\nOr please visit your nearest hospital for in-person evaluation.", false, 1500);
+            }
         }
 
         function getRecommendation(yesCount, highSeverity, critical) {
@@ -888,21 +1171,24 @@
                         level: "⚠️ Consultation Recommended",
                         message: "Medical Evaluation Advised",
                         action: "Consult gynecologist/endocrinologist for hormonal evaluation and ultrasound",
-                        timeline: "Within 2-4 weeks"
+                        timeline: "Within 2-4 weeks",
+                        needsConsultation: true
                     };
                 } else if (yesCount >= 2) {
                     return {
                         level: "📋 Lifestyle Focus",
                         message: "Lifestyle Modifications Recommended",
                         action: "Focus on weight management, regular exercise (150 min/week), balanced diet. Consider consultation if symptoms worsen",
-                        timeline: "Start immediately, review in 3 months"
+                        timeline: "Start immediately, review in 3 months",
+                        needsConsultation: false
                     };
                 } else {
                     return {
                         level: "✅ Low Risk",
                         message: "Continue Regular Health Monitoring",
                         action: "Minimal symptoms. Continue regular check-ups, self-monitoring, preventive measures",
-                        timeline: "Annual check-ups recommended"
+                        timeline: "Annual check-ups recommended",
+                        needsConsultation: false
                     };
                 }
             } else if (selectedCondition === 'breast') {
@@ -911,21 +1197,24 @@
                         level: "⚠️ High Priority",
                         message: "Schedule Physician Consultation Soon",
                         action: "Your symptoms require medical evaluation. Consult doctor for clinical breast examination and possible mammography/ultrasound",
-                        timeline: "Within 1-2 weeks"
+                        timeline: "Within 1-2 weeks",
+                        needsConsultation: true
                     };
                 } else if (yesCount === 1) {
                     return {
                         level: "👁️ Monitor",
                         message: "Monitor Symptoms Closely",
                         action: "Perform monthly self-breast examinations. If symptoms persist or worsen, consult physician within a month",
-                        timeline: "Monitor for 2-4 weeks"
+                        timeline: "Monitor for 2-4 weeks",
+                        needsConsultation: false
                     };
                 } else {
                     return {
                         level: "✅ Low Risk",
                         message: "Continue Regular Health Monitoring",
                         action: "Minimal symptoms. Continue self-exams, annual clinical exams, maintain healthy lifestyle",
-                        timeline: "Annual check-ups recommended"
+                        timeline: "Annual check-ups recommended",
+                        needsConsultation: false
                     };
                 }
             } else if (selectedCondition === 'uti') {
@@ -934,51 +1223,118 @@
                         level: "🚨 URGENT",
                         message: "IMMEDIATE MEDICAL ATTENTION REQUIRED",
                         action: "Seek emergency medical care TODAY. Visit nearest hospital or consult physician immediately. This indicates possible kidney infection",
-                        timeline: "Within 24 hours"
+                        timeline: "Within 24 hours",
+                        needsConsultation: true
                     };
                 } else if (yesCount >= 3 || highSeverity >= 1) {
                     return {
-                        level: "🏥 Medical Attention Needed",
+                        level: "🥼 Medical Attention Needed",
                         message: "Consult Doctor for Treatment",
                         action: "Your symptoms indicate likely UTI requiring antibiotics. See doctor for urine culture and appropriate treatment",
-                        timeline: "Within 2-3 days"
+                        timeline: "Within 2-3 days",
+                        needsConsultation: true
                     };
                 } else if (yesCount >= 1) {
                     return {
                         level: "💧 Preventive Measures",
                         message: "Focus on Prevention",
                         action: "Mild symptoms present. Increase water intake (2.5-3L daily), practice good hygiene, urinate after intercourse. If symptoms worsen, consult doctor",
-                        timeline: "Monitor for 1-2 days"
+                        timeline: "Monitor for 1-2 days",
+                        needsConsultation: false
                     };
                 } else {
                     return {
                         level: "✅ Low Risk",
                         message: "Continue Regular Health Monitoring",
                         action: "No symptoms. Continue preventive measures and maintain adequate hydration",
-                        timeline: "Regular health awareness"
+                        timeline: "Regular health awareness",
+                        needsConsultation: false
                     };
                 }
             } else if (selectedCondition === 'ovarian') {
                 if (yesCount >= 4 || highSeverity >= 2) {
                     return {
-                        level: "🏥 High Priority Evaluation",
+                        level: "🥼 High Priority Evaluation",
                         message: "Gynecological Evaluation Required",
                         action: "Multiple concerning symptoms present. Consult gynecologist for pelvic examination, ultrasound, and possible CA-125 blood test",
-                        timeline: "Within 1-2 weeks"
+                        timeline: "Within 1-2 weeks",
+                        needsConsultation: true
                     };
                 } else if (yesCount >= 2) {
                     return {
                         level: "📋 Medical Consultation",
                         message: "Consider Medical Evaluation",
                         action: "Some symptoms warrant attention. Schedule routine gynecological check-up to discuss these concerns",
-                        timeline: "Within 3-4 weeks"
+                        timeline: "Within 3-4 weeks",
+                        needsConsultation: true
                     };
                 } else {
                     return {
                         level: "✅ Low Risk",
                         message: "Continue Regular Health Monitoring",
                         action: "Minimal symptoms. Continue regular check-ups, know your family history, maintain awareness",
-                        timeline: "Annual gynecological check-ups recommended"
+                        timeline: "Annual gynecological check-ups recommended",
+                        needsConsultation: false
+                    };
+                }
+            } else if (selectedCondition === 'menopause') {
+                if (yesCount >= 5 || highSeverity >= 1) {
+                    return {
+                        level: "🥼 Medical Consultation Recommended",
+                        message: "Symptom Management Support Available",
+                        action: "Multiple menopausal symptoms are affecting your quality of life. Consult gynecologist to discuss hormone replacement therapy, lifestyle modifications, and other treatment options",
+                        timeline: "Within 2-4 weeks",
+                        needsConsultation: true
+                    };
+                } else if (yesCount >= 3) {
+                    return {
+                        level: "📋 Lifestyle Management",
+                        message: "Focus on Symptom Relief",
+                        action: "Moderate symptoms present. Try lifestyle modifications: regular exercise, balanced diet, stress management. Consider consultation if symptoms worsen",
+                        timeline: "Monitor for 4-6 weeks",
+                        needsConsultation: false
+                    };
+                } else {
+                    return {
+                        level: "✅ Mild Symptoms",
+                        message: "Continue Healthy Lifestyle",
+                        action: "Mild symptoms. Focus on calcium, vitamin D intake, regular exercise, and stress management. Annual check-ups recommended",
+                        timeline: "Annual health screenings",
+                        needsConsultation: false
+                    };
+                }
+            } else if (selectedCondition === 'thyroid') {
+                if (yesCount >= 5 || highSeverity >= 1) {
+                    return {
+                        level: "🥼 Medical Evaluation Required",
+                        message: "Thyroid Function Testing Recommended",
+                        action: "Multiple symptoms suggest possible thyroid disorder and/or anemia. Consult physician for thyroid function tests (TSH, T3, T4) and complete blood count (CBC)",
+                        timeline: "Within 1-2 weeks",
+                        needsConsultation: true
+                    };
+                } else if (yesCount >= 3) {
+                    return {
+                        level: "📋 Medical Consultation Advised",
+                        message: "Consider Blood Tests",
+                        action: "Some symptoms warrant investigation. Schedule appointment for thyroid and anemia screening tests",
+                        timeline: "Within 2-4 weeks",
+                        needsConsultation: true
+                    };
+                } else if (yesCount >= 1) {
+                    return {
+                        level: "👁️ Monitor Symptoms",
+                        message: "Watch for Progression",
+                        action: "Mild symptoms present. Focus on balanced diet with iodine and iron. If symptoms worsen or persist, seek medical evaluation",
+                        timeline: "Monitor for 4-6 weeks",
+                        needsConsultation: false
+                    };
+                } else {
+                    return {
+                        level: "✅ Low Risk",
+                        message: "Continue Preventive Care",
+                        action: "No significant symptoms. Maintain iodized salt use, iron-rich diet, and regular health check-ups",
+                        timeline: "Annual health screenings",
+                        needsConsultation: false
                     };
                 }
             }
@@ -1002,14 +1358,12 @@
                         ✗ No
                     </button>
                 `;
-            } else if (stage === 'results') {
+            } else if (stage === 'results' || stage === 'other') {
                 inputArea.innerHTML = `
                     <button class="action-btn btn-primary" onclick="resetToHome()">
                         Learn About Other Conditions
                     </button>
-                    <button class="action-btn btn-secondary" onclick="retakeAssessment()">
-                        Retake This Assessment
-                    </button>
+                    ${stage === 'results' ? '<button class="action-btn btn-secondary" onclick="retakeAssessment()">Retake This Assessment</button>' : ''}
                 `;
             } else {
                 inputArea.innerHTML = '';
@@ -1017,7 +1371,9 @@
         }
 
         async function resetToHome() {
-            stage = 'welcome';
+            stage = 'location';
+            selectedState = null;
+            selectedCity = null;
             selectedCondition = null;
             currentQuestion = 0;
             responses = [];
@@ -1025,8 +1381,8 @@
             inputArea.innerHTML = '';
             backBtn.classList.remove('visible');
             
-            await addBotMessage("Welcome back! 👋", false, 500);
-            await addBotMessage("Please select a condition you'd like to learn about:", true, 1000);
+            await addBotMessage("Welcome back! 🙏", false, 500);
+            await addBotMessage("Please tell me where you're from:", true, 1000);
         }
 
         async function retakeAssessment() {
